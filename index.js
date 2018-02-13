@@ -299,7 +299,7 @@ class SPA {
       Bucket: this.bucketName
     };
 
-    return this.aws.request('S3', 'listObjectsV2', params, this.stage, this.region);
+    return this.aws.request('S3', 'listObjectsV2', params, { stage: this.stage, region: this.region });
   }
 
   _deleteObjectsFromBucket(data) {
@@ -318,11 +318,9 @@ class SPA {
     let params = {
       Bucket: this.bucketName,
       Delete: { Objects: Objects },
-      stage: this.stage,      
-      region: this.region
     };
 
-    return this.aws.request('S3', 'deleteObjects', params);
+    return this.aws.request('S3', 'deleteObjects', params, { stage: this.stage, region: this.region });
   }
 
   _createBucket() {
@@ -330,12 +328,10 @@ class SPA {
     this.serverless.cli.log(`Creating bucket ${this.bucketName}...`);
 
     let params = {
-      Bucket: this.bucketName,
-      stage: this.stage,      
-      region: this.region
+      Bucket: this.bucketName
     };
 
-    return this.aws.request('S3', 'createBucket', params);
+    return this.aws.request('S3', 'createBucket', params, { stage: this.stage, region: this.region });
   }
 
   _configureBucket() {
@@ -346,12 +342,10 @@ class SPA {
       WebsiteConfiguration: {
         IndexDocument: { Suffix: 'index.html' },
         ErrorDocument: { Key: 'index.html' }
-      },
-      stage: this.stage,      
-      region: this.region
+      }
     };
 
-    return this.aws.request('S3', 'putBucketWebsite', params)
+    return this.aws.request('S3', 'putBucketWebsite', { stage: this.stage, region: this.region })
   }
 
   _configurePolicyForBucket() {
@@ -375,12 +369,10 @@ class SPA {
 
     let params = {
       Bucket: this.bucketName,
-      Policy: JSON.stringify(policy),
-      stage: this.stage,      
-      region: this.region
+      Policy: JSON.stringify(policy)
     };
 
-    return this.aws.request('S3', 'putBucketPolicy', params);
+    return this.aws.request('S3', 'putBucketPolicy', params, { stage: this.stage, region: this.region });
   }
 
   _uploadDirectory() {
@@ -410,9 +402,7 @@ class SPA {
           Bucket: this.bucketName,
           Key: fileKey,
           Body: fileBuffer,
-          ContentType: mime.lookup(filePath),
-          stage: this.stage,
-          region: this.region
+          ContentType: mime.lookup(filePath)
         };
 
         if (this.gzip) {
@@ -420,7 +410,7 @@ class SPA {
         }
 
         // TODO: remove browser caching
-        return this.aws.request('S3', 'putObject', params);
+        return this.aws.request('S3', 'putObject', params, { stage: this.stage, region: this.region });
       });
     });
   }
