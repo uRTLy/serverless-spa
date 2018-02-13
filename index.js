@@ -317,10 +317,12 @@ class SPA {
 
     let params = {
       Bucket: this.bucketName,
-      Delete: { Objects: Objects }
+      Delete: { Objects: Objects },
+      stage: this.stage,      
+      region: this.region
     };
 
-    return this.aws.request('S3', 'deleteObjects', params, this.stage, this.region);
+    return this.aws.request('S3', 'deleteObjects', params);
   }
 
   _createBucket() {
@@ -328,10 +330,12 @@ class SPA {
     this.serverless.cli.log(`Creating bucket ${this.bucketName}...`);
 
     let params = {
-      Bucket: this.bucketName
+      Bucket: this.bucketName,
+      stage: this.stage,      
+      region: this.region
     };
 
-    return this.aws.request('S3', 'createBucket', params, this.stage, this.region);
+    return this.aws.request('S3', 'createBucket', params);
   }
 
   _configureBucket() {
@@ -342,10 +346,12 @@ class SPA {
       WebsiteConfiguration: {
         IndexDocument: { Suffix: 'index.html' },
         ErrorDocument: { Key: 'index.html' }
-      }
+      },
+      stage: this.stage,      
+      region: this.region
     };
 
-    return this.aws.request('S3', 'putBucketWebsite', params, this.stage, this.region)
+    return this.aws.request('S3', 'putBucketWebsite', params)
   }
 
   _configurePolicyForBucket() {
@@ -369,10 +375,12 @@ class SPA {
 
     let params = {
       Bucket: this.bucketName,
-      Policy: JSON.stringify(policy)
+      Policy: JSON.stringify(policy),
+      stage: this.stage,      
+      region: this.region
     };
 
-    return this.aws.request('S3', 'putBucketPolicy', params, this.stage, this.region);
+    return this.aws.request('S3', 'putBucketPolicy', params);
   }
 
   _uploadDirectory() {
@@ -402,7 +410,9 @@ class SPA {
           Bucket: this.bucketName,
           Key: fileKey,
           Body: fileBuffer,
-          ContentType: mime.lookup(filePath)
+          ContentType: mime.lookup(filePath),
+          stage: this.stage,
+          region: this.region
         };
 
         if (this.gzip) {
@@ -410,7 +420,7 @@ class SPA {
         }
 
         // TODO: remove browser caching
-        return this.aws.request('S3', 'putObject', params, this.stage, this.region);
+        return this.aws.request('S3', 'putObject', params);
       });
     });
   }
